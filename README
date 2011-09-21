@@ -1,0 +1,48 @@
+############# Rmusicmetric: some functions for the musicmetric.com beta api ##################################
+
+Notes:
+
+Provided are two very simple R helper functions that allow an R session to call out to  
+musicmetric.com to access thier beta API and return the json data as native R objects.
+
+You'll need to use an API token to access thier site which you can apply for here:
+http://developer.musicmetric.com/index.html
+
+The main purpose of the functions are to demonstrate that the artist "plays" timeseries data provided over the 
+api can be charted and studied in R using the terrific quantmod charting library. This is made possible through
+reshaping the raw timeseries vector data into a proper XTS formatted object.
+
+The hope is that once the data is formatted as XTS, interesting statistical analysis can be conducted on this data.
+
+When I get a moment I'd like to extend the library to all of their supported API calls.
+If you get there ahead of me, do get in touch and I'll build out a library of the helper functions here.
+
+These functions are released on a flexible MIT license, and further details are available here:
+http://www.opensource.org/licenses/mit-license.php
+
+If you do use this code in your projects attribution would be appreciated.
+
+- Andrew
+
+
+################################################################################################################
+
+ Copyright (c) 2011 Andrew Morgan, minkymorgan at gmail dot com
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
+ associated documentation files (the "Software"), to deal in the Software without restriction, including 
+ without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject 
+ to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all copies or substantial 
+ portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT 
+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+#####################################################################################################
