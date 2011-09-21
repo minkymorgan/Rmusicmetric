@@ -24,14 +24,15 @@
  library(RJSONIO)
  library(TTR)
 
+# note: replace <addyourtokenhere> with your own developer key. 
 
-semetric.fest <- function(CHART="15903a3e868342d982196271b3c12ca4", TOKEN="1b2eb802b24f437a916f4e2154fe7c77") {
+semetric.fest <- function(CHART="15903a3e868342d982196271b3c12ca4", TOKEN="<addyourtokenhere>") {
   uri <<- paste("http://apib2.semetric.com/chart/",CHART,"?token=",TOKEN, sep = "")
   mmc <<- fromJSON(paste("http://apib2.semetric.com/chart/",CHART,"?token=",TOKEN, sep = "")) 
   return(mmc)
 }
 
-semetric.lastfm <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="1b2eb802b24f437a916f4e2154fe7c77") {
+semetric.lastfm <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourtokenhere>") {
   uri <<- paste("http://apib2.semetric.com/artist/",ID,"/plays/lastfm?token=",TOKEN, sep = "")
   mmlastfm <<- fromJSON(paste("",uri,sep = "")) 
   mmlastfmdf <- as.data.frame(mmlastfm$response$data)
