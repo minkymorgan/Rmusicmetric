@@ -122,28 +122,28 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   # comments # the "comments" api dataset is omitted for the moment
 
   # get lastfm_plays  
-  mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="plays", NETWORK="lastfm"))) 
-  mmtsdf <- as.data.frame(mmts$response$data)
+  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="plays", NETWORK="lastfm"))) 
+  mmtsdf <<- as.data.frame(mmts$response$data)
   lastfm_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
 
   # get lastfm fans
-  mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="fans", NETWORK="lastfm"))) 
-  mmtsdf <- as.data.frame(mmts$response$data)
+  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="lastfm"))) 
+  mmtsdf <<- as.data.frame(mmts$response$data)
   lastfm_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
   
   #get youtube plays
-  mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="plays", NETWORK="youtube"))) 
-  mmtsdf <- as.data.frame(mmts$response$data)
+  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="plays", NETWORK="youtube"))) 
+  mmtsdf <<- as.data.frame(mmts$response$data)
   youtube_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
   
   # get youtube fans
-  mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="fans", NETWORK="youtube"))) 
-  mmtsdf <- as.data.frame(mmts$response$data)
+  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="youtube"))) 
+  mmtsdf <<- as.data.frame(mmts$response$data)
   youtube_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
 
   # get facebook fans
-  mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="fans", NETWORK="facebook"))) 
-  mmtsdf <- as.data.frame(mmts$response$data)
+  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="facebook"))) 
+  mmtsdf <<- as.data.frame(mmts$response$data)
   facebook_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
   
   # bind all the timeseries together now. note the double arrow <<-, meaning I save this to the session globally
@@ -153,7 +153,7 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
 
   # the now bound columns needs a final convert and column rename so it's suitable for charting and working with  
   x_tstable <<- as.matrix(tstable)
-  mode(x_tstable) <<- "numeric"
+  mode(x_tstable) <- "numeric"
   xts_tstable <<- as.xts(x_tstable)
   names(xts_tstable)[1]="lastfm_plays"
   names(xts_tstable)[2]="lastfm_fans"
@@ -174,5 +174,3 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   # to test this script you can run the following from the R console:
   #     semetric.ts(ID="e1bd6911146942b88d3918d99bb0c459")
   }
-
-  
