@@ -167,7 +167,7 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   plot(addTA(xts_tstable$lastfm_fans, legend="lastfm fans", col="green"))
   plot(addTA(xts_tstable$youtube_fans, legend="youtube fans", col="blue"))
   plot(addTA(xts_tstable$youtube_plays, legend="youtube plays", col="blue"))
-  plot(addTA(xts_tstable$youtube_plays, legend="facebook fans", col="red"))
+  plot(addTA(xts_tstable$facebook_fans, legend="facebook fans", col="red"))
   
   # I've commented out the next line, which would dump the table-ized data to the screen. uncomment if you like it
   # return(xts_tstable)
