@@ -99,7 +99,7 @@ semetric.ts.artist <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", DATASET="p
 semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourtokenhere>"
 ) {
   # notes:
-  # Greg enhancement my lastfm prototype function, making it generic for any api parameters
+  # Greg's enhancement of my lastfm prototype function, made it generic for any api parameters
   # I like his approach: Make the api call function generic. Obvious really. 
   # But, the sad truth is actually users tell me they love excel, and like small multiples in dashboards. 
   # Boo.
