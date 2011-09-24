@@ -65,8 +65,7 @@ semetric.lastfm <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyo
   chartSeries(xtslastfm, name=mmid$response$name, theme="white")
   }
 
-semetric.uri.artist <- function(GUID="b5eccd4e8ae24cc49b80fedfe74581d1", DATASET="plays", NETWORK="lastfm", #TOKEN="<addyourtokenhere>"
-    TOKEN="1b2eb802b24f437a916f4e2154fe7c77"
+semetric.uri.artist <- function(GUID="b5eccd4e8ae24cc49b80fedfe74581d1", DATASET="plays", NETWORK="lastfm", TOKEN="<addyourtokenhere>"
      ) {
 	 # I have broken out the Artist URI builder into it's own topline function, to incl in new functions...
      # to fetch json, just use: fromJSON(semetric.uri.artist(DATASET="fans",NETWORK="youtube")) 
@@ -125,27 +124,27 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   # get lastfm_plays  
   mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="plays", NETWORK="lastfm"))) 
   mmtsdf <- as.data.frame(mmts$response$data)
-  lastfm_plays <- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+  lastfm_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
 
   # get lastfm fans
   mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="fans", NETWORK="lastfm"))) 
   mmtsdf <- as.data.frame(mmts$response$data)
-  lastfm_fans <- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+  lastfm_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
   
   #get youtube plays
   mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="plays", NETWORK="youtube"))) 
   mmtsdf <- as.data.frame(mmts$response$data)
-  youtube_plays <- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+  youtube_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
   
   # get youtube fans
   mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="fans", NETWORK="youtube"))) 
   mmtsdf <- as.data.frame(mmts$response$data)
-  youtube_fans <- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+  youtube_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
 
   # get facebook fans
   mmts  <- fromJSON(paste(semetric.uri.artist(DATASET="fans", NETWORK="facebook"))) 
   mmtsdf <- as.data.frame(mmts$response$data)
-  facebook_fans <- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+  facebook_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
   
   # bind all the timeseries together now. note the double arrow <<-, meaning I save this to the session globally
   # which allows chartSeries to work normally, plus means you can play with it yourself
@@ -153,9 +152,9 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   tstable <<- as.data.frame(cbind(lastfm_plays, lastfm_fans, youtube_plays, youtube_fans, facebook_fans))  
 
   # the now bound columns needs a final convert and column rename so it's suitable for charting and working with  
-  x_tstable <- as.matrix(tstable)
-  mode(x_tstable) <- "numeric"
-  xts_tstable <- as.xts(x_tstable)
+  x_tstable <<- as.matrix(tstable)
+  mode(x_tstable) <<- "numeric"
+  xts_tstable <<- as.xts(x_tstable)
   names(xts_tstable)[1]="lastfm_plays"
   names(xts_tstable)[2]="lastfm_fans"
   names(xts_tstable)[3]="youtube_plays"
