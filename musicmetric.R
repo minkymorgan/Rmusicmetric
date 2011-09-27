@@ -21,6 +21,7 @@
 ######################################################################################################
 # history:
 # Sept 24 2011: restructed all the calls, delivered generic api fetcher, built full artist profile chart
+# Sept 27 2011: semetric.ts() dynamically constructs the data for successful calls only, solving chart errors                
 
 
  library(quantmod)
@@ -28,7 +29,8 @@
 
 # note: replace <addyourtokenhere> with your own developer key. 
 
-semetric.chart <- function(CHART="15903a3e868342d982196271b3c12ca4", TOKEN="<addyourtokenhere>"
+semetric.chart <- function(CHART="15903a3e868342d982196271b3c12ca4", # TOKEN="<addyourtokenhere>"
+    TOKEN="1b2eb802b24f437a916f4e2154fe7c77"
   ) {
   
   # Notes. In finanical timeseries, a core concept is the "watchlist", a list of stocks you track. 
@@ -95,7 +97,8 @@ semetric.ts.artist <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", DATASET="p
     }
 
   
-semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourtokenhere>"
+semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", #TOKEN="<addyourtokenhere>"
+    TOKEN="1b2eb802b24f437a916f4e2154fe7c77"
 ) {
   # notes:
   # Greg's enhancement of my lastfm prototype function, made it generic for any api parameters
@@ -121,45 +124,82 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   plays <- c("lastfm", "youtube")
   # comments # the "comments" api dataset is omitted for the moment
 
+
+  ##### this was the magic way to dynamically generate the dataframe from the list of successful calls
+  ##### I reference the following url: http://stackoverflow.com/questions/5542542/using-cbind-on-an-arbitrarily-long-list-of-objects
+  ##### my thanks to the authors of the answers.
+  # (ns <- LETTERS[1:2])
+  # obj.list <- lapply(ns, get)
+  # names(obj.list) <- ns
+  # do.call(cbind, obj.list)
+
+  
+  
   # get lastfm_plays  
   mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="plays", NETWORK="lastfm"))) 
-  mmtsdf <<- as.data.frame(mmts$response$data)
-  lastfm_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+
+  if (mmts$success == "TRUE") {
+     mmtsdf <<- as.data.frame(mmts$response$data)
+     lastfm_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))    
+     panel <- "lastfm_plays"
+	 }
 
   # get lastfm fans
   mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="lastfm"))) 
-  mmtsdf <<- as.data.frame(mmts$response$data)
-  lastfm_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+
+  if (mmts$success == "TRUE") {
+     mmtsdf <<- as.data.frame(mmts$response$data)
+     lastfm_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+     panel <- c(panel, "lastfm_fans")
+    }
   
   #get youtube plays
   mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="plays", NETWORK="youtube"))) 
-  mmtsdf <<- as.data.frame(mmts$response$data)
-  youtube_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
-  
-  # get youtube fans
-  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="youtube"))) 
-  mmtsdf <<- as.data.frame(mmts$response$data)
-  youtube_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
 
+  if (mmts$success == "TRUE") {
+     mmtsdf <<- as.data.frame(mmts$response$data)
+     youtube_plays <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+     panel <- c(panel, "youtube_plays")
+	 }
+  # get youtube fans
+
+  mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="youtube"))) 
+
+  if (mmts$success == "TRUE") {
+     mmtsdf <<- as.data.frame(mmts$response$data)
+     youtube_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+     panel <- c(panel, "youtube_fans")
+    }
   # get facebook fans
   mmts  <<- fromJSON(paste(semetric.uri.artist(GUID=ID,DATASET="fans", NETWORK="facebook"))) 
-  mmtsdf <<- as.data.frame(mmts$response$data)
-  facebook_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+
+  if (mmts$success == "TRUE") {
+     mmtsdf <<- as.data.frame(mmts$response$data)
+     facebook_fans <<- xts(mmts$response$data,(ISOdate(1970,1,1)+mmts$response$start_time)+((as.numeric(rownames(mmtsdf))-1)*mmts$response$period))
+     panel <- c(panel, "facebook_fans")
+  }
   
   # bind all the timeseries together now. note the double arrow <<-, meaning I save this to the session globally
   # which allows chartSeries to work normally, plus means you can play with it yourself
 
-  tstable <<- as.data.frame(cbind(lastfm_plays, lastfm_fans, youtube_plays, youtube_fans, facebook_fans))  
-
-  # the now bound columns needs a final convert and column rename so it's suitable for charting and working with  
+  # tstable <<- as.data.frame(cbind(lastfm_plays, lastfm_fans, youtube_plays, youtube_fans, facebook_fans))  
+    tstable <<- is.na.data.frame(panel)
+	
+  obj.panel <- lapply(panel, get)
+  names(obj.panel) <- panel
+  obj.table <- do.call(cbind, obj.panel)
+  tstable <- as.data.frame(obj.table)
+ 
+  # the now bound columns need a final convert and column rename so it's suitable for charting and working with  
   x_tstable <<- as.matrix(tstable)
   mode(x_tstable) <- "numeric"
   xts_tstable <<- as.xts(x_tstable)
-  names(xts_tstable)[1]="lastfm_plays"
-  names(xts_tstable)[2]="lastfm_fans"
-  names(xts_tstable)[3]="youtube_plays"
-  names(xts_tstable)[4]="youtube_fans"
-  names(xts_tstable)[5]="facebook_fans"
+
+#  names(xts_tstable)[1]="lastfm_plays"
+#  names(xts_tstable)[2]="lastfm_fans"
+#  names(xts_tstable)[3]="youtube_plays"
+#  names(xts_tstable)[4]="youtube_fans"
+#  names(xts_tstable)[5]="facebook_fans"
    
   # here are the calls to chart the whole dataset in a nice Artist Timeseries Profile page. 
   chartSeries(xts_tstable$lastfm_plays, name=paste(mmid$response$name,":lastfm plays"), theme="white")
@@ -172,5 +212,6 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN="<addyourto
   # return(xts_tstable)
 
   # to test this script you can run the following from the R console:
+  #     semetric.chart() # to find artist IDs
   #     semetric.ts(ID="e1bd6911146942b88d3918d99bb0c459")
   }
