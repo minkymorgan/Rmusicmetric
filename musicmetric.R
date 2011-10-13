@@ -28,9 +28,7 @@
  library(RJSONIO)
 
 # note: replace <addyourtokenhere> with your own developer key.
-
-
-token <<- "1b2eb802b24f437a916f4e2154fe7c77"
+token <<- "<addyourtokenhere>"
 
 semetric.chartlist <- function(CHART="15903a3e868342d982196271b3c12ca4", TOKEN=token) {
   # semetric.chartlist()
