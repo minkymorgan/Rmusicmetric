@@ -24,8 +24,12 @@
 # Sept 27 2011: semetric.ts() dynamically constructs the data for successful calls only, solving chart errors               
 # Oct  13 2011: fixes for errs where data zeroed or missing etc, repointed default tokens, added unit test 
 
+ # note I've added in some more dependent packages. You may need to install them. All avaialble on CRAN via your console.
  library(quantmod)
  library(RJSONIO)
+ library(corrgram)
+ library(lattice)
+
 
 # note: replace <addyourtokenhere> with your own developer key.
 token <<- "<addyourtokenhere>"
@@ -108,7 +112,7 @@ semetric.ts.artist <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", DATASET="p
     }
 
  
-semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token ) {
+semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token , c=1) {
   # semetric.ts()
   # Purpose: Retrieve all the datasets for an artist, merge and table-ize it, and chart it via quantmod
   # notes:
@@ -117,6 +121,8 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token ) {
   # is tested for existence, and everything that exists is eventually charted.
   # note to self. Table-ize is possible as XTS can merge on timestamp gracefully if the data has ragged edges.
   # which I see that much of it does. XTS is great.
+  # I have now added in some additional charting options. try c=1, c=2, c=3 for different views of the data.
+  # I have also added in c=4, for an experimental view of plays versus fans on lastfm, using hexbin library.
 
   # first fetch the artists name, working with IDs alone is for robots, not me. 
   uri2 <<- paste("http://apib2.semetric.com/artist/",ID,"?token=",TOKEN, sep = "")
@@ -131,9 +137,9 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token ) {
   # comments # the "comments" api dataset is omitted for the moment
 
 
-  ##### I googled the magic way to dynamically generate the dataframe, from the list of successful data calls
-  ##### check out: http://stackoverflow.com/questions/5542542/using-cbind-on-an-arbitrarily-long-list-of-objects
-  ##### my thanks to the authors of the answers.
+  ## I googled the magic way to dynamically generate the dataframe, from the list of successful data calls
+  ## check out: http://stackoverflow.com/questions/5542542/using-cbind-on-an-arbitrarily-long-list-of-objects
+  ## my thanks to the authors of the answers.
   # (ns <- LETTERS[1:2])
   # obj.list <- lapply(ns, get)
   # names(obj.list) <- ns
@@ -199,32 +205,49 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token ) {
   x_tstable <<- as.matrix(tstable)
   mode(x_tstable) <<- "numeric"
   xts_tstable <<- as.xts(x_tstable)
-
- 
-  # here are the calls to chart the whole dataset in a nice Artist Timeseries Profile page.
-
-  chartSeries(xts_tstable$lastfm_plays, name=paste(mmid$response[3],":lastfm plays"), theme="white")
-  plot(addEMA(n=10, col="black"))
-
- if (length(xts_tstable$lastfm_fans) >0) {
+	
+  if (c==1) {
+	  # here are the calls to chart the whole dataset in a nice Artist Timeseries Profile page.
+	
+	  chartSeries(xts_tstable$lastfm_plays, name=paste(mmid$response[3],":lastfm plays"), theme="white")
+	  plot(addEMA(n=10, col="black"))
+	
+	  if (length(xts_tstable$lastfm_fans) >0) {
       plot(addTA(xts_tstable$lastfm_fans, legend="lastfm fans", col="green"))
+	  }
+	  if (length(xts_tstable$youtube_fans) >0) {
+	     plot(addTA(xts_tstable$youtube_fans, legend="youtube fans", col="blue"))
+	  }
+	  if (length(xts_tstable$youtube_plays) >0) {
+	     plot(addTA(xts_tstable$youtube_plays, legend="youtube plays", col="blue"))
+	  }
+	  if (length(xts_tstable$facebook_fans) >0) {
+	     plot(addTA(xts_tstable$facebook_fans, legend="facebook fans", col="red"))
+	  }
+  } 
+  if (c==2) {
+         corrgram(as.data.frame(xts_tstable), main=paste(mmid$response[3]))
   }
-  if (length(xts_tstable$youtube_fans) >0) {
-     plot(addTA(xts_tstable$youtube_fans, legend="youtube fans", col="blue"))
+
+  if (c==3) {
+	  pairs(x_tstable, main=paste(mmid$response[3]) )
   }
-  if (length(xts_tstable$youtube_plays) >0) {
-     plot(addTA(xts_tstable$youtube_plays, legend="youtube plays", col="blue"))
+  if (c==4)  {
+  p <- lastfm_plays
+  f <- lastfm_fans
+  t <- paste(mmid$response[3], " lastfm plays vs fans")
+             plot(hexbin(f,p, xbins=15), colramp= function(n){LinOCS(n,beg=230,end=25)}, main=t) 
   }
-  if (length(xts_tstable$facebook_fans) >0) {
-     plot(addTA(xts_tstable$facebook_fans, legend="facebook fans", col="red"))
-  }
- 
+
+
+
   # I've commented out the next line, which would dump the table-ized data to the screen. uncomment if you like it
    return(tail(xts_tstable))
 
   # to test this script you can run the following from the R console:
   #     semetric.chart() # to find artist IDs
   #     semetric.ts(ID="e1bd6911146942b88d3918d99bb0c459")
+
 }
 
 semetric.unit <- function(ID="e1bd6911146942b88d3918d99bb0c459", TOKEN=token){
