@@ -227,7 +227,7 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token , c=1
 	  }
   } 
   if (c==2) {
-         corrgram(as.data.frame(xts_tstable), main=paste(mmid$response[3]))
+         corrgram(as.data.frame(xts_tstable), main=paste(mmid$response[3]," correlogram by source") )
   }
 
   if (c==3) {
@@ -240,15 +240,12 @@ semetric.ts <- function(ID="b5eccd4e8ae24cc49b80fedfe74581d1", TOKEN=token , c=1
              plot(hexbin(f,p, xbins=15), colramp= function(n){LinOCS(n,beg=230,end=25)}, main=t) 
   }
 
-
-
   # I've commented out the next line, which would dump the table-ized data to the screen. uncomment if you like it
    return(tail(xts_tstable))
 
   # to test this script you can run the following from the R console:
   #     semetric.chart() # to find artist IDs
   #     semetric.ts(ID="e1bd6911146942b88d3918d99bb0c459")
-
 }
 
 semetric.unit <- function(ID="e1bd6911146942b88d3918d99bb0c459", TOKEN=token){
