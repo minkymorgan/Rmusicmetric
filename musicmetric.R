@@ -23,8 +23,9 @@
 # Sept 24 2011: restructed all the calls, delivered generic api fetcher, built full artist profile chart
 # Sept 27 2011: semetric.ts() dynamically constructs the data for successful calls only, solving chart errors               
 # Oct  13 2011: fixes for errs where data zeroed or missing etc, repointed default tokens, added unit test 
+# OCt  15 2011: added in improved charting options. [try out: c=1, c=2, c=3, c=4 like this] semetric.ts(c=3)  
 
- # note I've added in some more dependent packages. You may need to install them. All avaialble on CRAN via your console.
+ # note I've added more packages to support charting. All avaialble on CRAN via your console.
  library(quantmod)
  library(RJSONIO)
  library(corrgram)
